@@ -3,7 +3,7 @@
 namespace App\Core\Routing;
 
 use App\Core\Request\RequestInterface;
-use http\Exception\RuntimeException;
+use App\Exceptions\RouteNotFoundException;
 
 class Router
 {
@@ -43,6 +43,6 @@ class Router
             }
         }
 
-        throw new RuntimeException('Can not find route');
+        throw new RouteNotFoundException('Can\'t find route');
     }
 }

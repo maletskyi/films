@@ -4,9 +4,9 @@ namespace App;
 
 use App\Core\Request\Request;
 use App\Core\Routing\Router;
+use App\Exceptions\ActionNotExists;
 use Closure;
 use App\Core\DependencyInjection\Container;
-use RuntimeException;
 
 class App
 {
@@ -29,7 +29,7 @@ class App
         } else {
             [$controllerClass, $method] = explode('@', $handler);
             if ( ! class_exists($controllerClass) || ! method_exists($controllerClass, $method)) {
-                throw new RuntimeException('Controller or method does not exists');
+                throw new ActionNotExists('Action does not exists');
             }
 
             $controller = Container::getContainer()->get($controllerClass);
