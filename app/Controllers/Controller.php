@@ -28,5 +28,6 @@ class Controller
     {
         $_SESSION['temporary'] = $data;
         header("Location: $location");
+        die();
     }
 }
