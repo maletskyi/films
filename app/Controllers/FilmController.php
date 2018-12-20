@@ -2,9 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Core\DependencyInjection\Container;
 use App\Core\Request\RequestInterface;
+use App\Core\Validation\Rules\ExistsByIdRule;
+use App\Core\Validation\Rules\RegexRule;
+use App\Core\Validation\Validator;
 use App\Entities\Actor;
 use App\Entities\Film;
+use App\Repositories\StorageFormatRepositoryInterface;
 use App\Services\ActorServiceInterface;
 use App\Services\FilmServiceInterface;
 use App\Services\StorageFormatServiceInterface;
@@ -51,17 +56,31 @@ class FilmController extends Controller
     {
         $params = $request->getParsedBody();
 
-        $title           = $params['title'];
-        $releaseYear     = $params['release_year'];
-        $storageFormatId = $params['storage_format_id'];
-        $actorsString    = $params['actors'];
+        $titleRegexRule         = new RegexRule('/^([а-яА-ЯЁёіa-zA-Z0-9_,\s-]{3,255})$/u', $params['title'], 'Invalid title value');
+        $releaseRegexYearRule   = new RegexRule('/^([\d]{4})$/', $params['release_year'], 'Invalid release year');
+        $formatIdRegexRule      = new RegexRule('/^([\d]{1,7})$/', $params['storage_format_id'], 'Invalid storage format');
+        $formatIdExistsByIdRule = new ExistsByIdRule(Container::getContainer()->get(StorageFormatRepositoryInterface::class), $params['storage_format_id'], 'Storage format does not exists');
+        $actorsRegexRule        = new RegexRule('/^([а-яА-ЯЁёіa-zA-Z0-9_\s,-]{0,255})$/u', $params['actors'], 'Invalid actors string');
 
-//       TODO: do validation
+        $validator = new Validator();
+
+        $validator
+            ->addRule('title', $titleRegexRule)
+            ->addRule('release_year', $releaseRegexYearRule)
+            ->addRule('storage_format_id', $formatIdRegexRule)
+            ->addRule('storage_format_id', $formatIdExistsByIdRule)
+            ->addRule('actors', $actorsRegexRule);
+
+        if ( ! $validator->validate()) {
+            $this->redirect('/films/create', [
+                'validation' => $validator->getValidationResult(),
+            ]);
+        }
 
         $film = new Film([
-            'title'           => $title,
-            'releaseYear'     => $releaseYear,
-            'storageFormatId' => $storageFormatId,
+            'title'           => $params['title'],
+            'releaseYear'     => $params['release_year'],
+            'storageFormatId' => $params['storage_format_id'],
         ]);
 
         $film = $this->filmService->createFilm($film);
@@ -74,7 +93,7 @@ class FilmController extends Controller
             ]);
         }
 
-        $actors = $this->actorService->getOrCreateActorsFromString($actorsString);
+        $actors = $this->actorService->getOrCreateActorsFromString($params['actors']);
 
         foreach ($actors as $actor) {
             $this->filmService->addActor($film, $actor);
@@ -111,7 +130,7 @@ class FilmController extends Controller
         if ($filmsCount) {
             $this->redirect('/', [
                 'messages' => [
-                    'success' => count($films) . ' films successfully imported',
+                    'success' => count($films).' films successfully imported',
                 ],
             ]);
         } else {
@@ -130,13 +149,13 @@ class FilmController extends Controller
         if ($this->filmService->deleteFilmById($id)) {
             $this->redirect('/', [
                 'messages' => [
-                    'success' => 'Film with id ' . $id . ' successfully deleted',
+                    'success' => 'Film with id '.$id.' successfully deleted',
                 ],
             ]);
         } else {
             $this->redirect('/', [
                 'messages' => [
-                    'error' => 'Can not delete film with id ' . $id,
+                    'error' => 'Can not delete film with id '.$id,
                 ],
             ]);
         }
