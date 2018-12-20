@@ -147,4 +147,9 @@ class FilmRepository extends AbstractRepository implements FilmRepositoryInterfa
 
         return $films;
     }
+
+    public function existsById(int $id)
+    {
+        // TODO: Implement existsById() method.
+    }
 }

@@ -47,4 +47,15 @@ class StorageFormatRepository extends AbstractRepository implements StorageForma
 
         return $statement->fetch() ?: null;
     }
+
+    public function existsById(int $id): bool
+    {
+        $statement = $this->pdo->prepare('SELECT count(*) FROM ' . StorageFormat::TABLE . ' WHERE id=?');
+
+        $statement->execute([$id]);
+
+        $count = $statement->fetchColumn();
+
+        return $count > 0;
+    }
 }

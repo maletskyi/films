@@ -12,5 +12,7 @@ interface RepositoryInterface
 
     public function deleteById(int $id);
 
+    public function existsById(int $id);
+
 //    public function update(AbstractEntity $entity);
 }

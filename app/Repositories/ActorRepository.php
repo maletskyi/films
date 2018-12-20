@@ -7,11 +7,6 @@ use PDO;
 
 class ActorRepository extends AbstractRepository implements ActorRepositoryInterface
 {
-    public function getAll($order = 'id', $destination = 'ASC')
-    {
-        // TODO: Implement getAll() method.
-    }
-
     public function create($actor)
     {
         $statement = $this->pdo->prepare('INSERT INTO ' . Actor::TABLE . ' SET first_name=?, last_name=?');
@@ -30,16 +25,6 @@ class ActorRepository extends AbstractRepository implements ActorRepositoryInter
         $actor->id = $id;
 
         return $actor;
-    }
-
-    public function getById(int $id)
-    {
-        // TODO: Implement getById() method.
-    }
-
-    public function deleteById(int $id)
-    {
-        // TODO: Implement deleteById() method.
     }
 
     public function getByFilmId(int $filmId): array
@@ -62,5 +47,25 @@ class ActorRepository extends AbstractRepository implements ActorRepositoryInter
         $stmt->setFetchMode(PDO::FETCH_CLASS, Actor::class);
 
         return $stmt->fetch() ?: null;
+    }
+
+    public function existsById(int $id)
+    {
+        // TODO: Implement existsById() method.
+    }
+
+    public function getAll($order = 'id', $destination = 'ASC')
+    {
+        // TODO: Implement getAll() method.
+    }
+
+    public function getById(int $id)
+    {
+        // TODO: Implement getById() method.
+    }
+
+    public function deleteById(int $id)
+    {
+        // TODO: Implement deleteById() method.
     }
 }
