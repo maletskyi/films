@@ -2,8 +2,8 @@
 
 ## Installation
 1. Clone the repository using `git clone`
-1. Upload dump.sql file in MySQL database using `mysql -u <username> -p <databasename> < <filename.sql>`
-1. Change database configurations in config/db.php
+1. Upload `dump.sql` file in MySQL database using `mysql -u <username> -p <databasename> < <filename.sql>`
+1. Change database configurations in `config/db.php`
 1. Move to the project folder and start local server using `php -S localhost:8000`
 
 ## Architecture description
