@@ -56,7 +56,7 @@ class FilmController extends Controller
     {
         $params = $request->getParsedBody();
 
-        $titleRegexRule         = new RegexRule('/^([а-яА-ЯЁёіa-zA-Z0-9_,\s-]{3,255})$/u', $params['title'], 'Invalid title value');
+        $titleRegexRule         = new RegexRule('/^(.{2,255})$/u', $params['title'], 'Title must be greater than 1 and less than 256 characters');
         $releaseRegexYearRule   = new RegexRule('/^([\d]{4})$/', $params['release_year'], 'Invalid release year');
         $formatIdRegexRule      = new RegexRule('/^([\d]{1,7})$/', $params['storage_format_id'], 'Invalid storage format');
         $formatIdExistsByIdRule = new ExistsByIdRule(Container::getContainer()->get(StorageFormatRepositoryInterface::class), $params['storage_format_id'], 'Storage format does not exists');
