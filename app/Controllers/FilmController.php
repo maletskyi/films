@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Core\DependencyInjection\Container;
 use App\Core\Request\RequestInterface;
 use App\Core\Validation\Rules\ExistsByIdRule;
+use App\Core\Validation\Rules\MaxValueRule;
+use App\Core\Validation\Rules\MinValueRule;
 use App\Core\Validation\Rules\RegexRule;
 use App\Core\Validation\Validator;
 use App\Entities\Actor;
@@ -56,9 +58,12 @@ class FilmController extends Controller
     {
         $params = $request->getParsedBody();
 
+        $currentYear = (int) date('Y');
+
         $titleRegexRule         = new RegexRule('/^(.{2,255})$/u', $params['title'], 'Title must be greater than 1 and less than 256 characters');
-        $releaseRegexYearRule   = new RegexRule('/^([\d]{4})$/', $params['release_year'], 'Invalid release year');
-        $formatIdRegexRule      = new RegexRule('/^([\d]{1,7})$/', $params['storage_format_id'], 'Invalid storage format');
+        $releaseYearRegexRule   = new RegexRule('/^([\d]{4})$/', $params['release_year'], 'Invalid release year format');
+        $releaseYearMinRule     = new MinValueRule(Film::MIN_RELEASE_YEAR, $params['release_year'], 'Release year must be greater than ' . Film::MIN_RELEASE_YEAR);
+        $releaseYearMaxRule     = new MaxValueRule($currentYear, $params['release_year'], 'Release year must be less or equal than ' . $currentYear);
         $formatIdExistsByIdRule = new ExistsByIdRule(Container::getContainer()->get(StorageFormatRepositoryInterface::class), $params['storage_format_id'], 'Storage format does not exists');
         $actorsRegexRule        = new RegexRule('/^([а-яА-ЯЁёіa-zA-Z0-9_\s,-]{0,255})$/u', $params['actors'], 'Invalid actors string');
 
@@ -66,8 +71,9 @@ class FilmController extends Controller
 
         $validator
             ->addRule('title', $titleRegexRule)
-            ->addRule('release_year', $releaseRegexYearRule)
-            ->addRule('storage_format_id', $formatIdRegexRule)
+            ->addRule('release_year', $releaseYearRegexRule)
+            ->addRule('release_year', $releaseYearMinRule)
+            ->addRule('release_year', $releaseYearMaxRule)
             ->addRule('storage_format_id', $formatIdExistsByIdRule)
             ->addRule('actors', $actorsRegexRule);
 
