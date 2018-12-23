@@ -32,8 +32,8 @@ class App
         if ($handler instanceof Closure) {
             $handler($request);
         } else {
-            [$controllerClass, $method] = explode('@', $handler);
-            if ( ! class_exists($controllerClass) || ! method_exists($controllerClass, $method)) {
+            [$controllerClass, $method] = explode('@', $handler, 2);
+            if (!class_exists($controllerClass) || !method_exists($controllerClass, $method)) {
                 throw new ActionNotExists('Action does not exists');
             }
 
@@ -43,9 +43,9 @@ class App
         }
     }
 
-    public function initDBConnection()
+    public function initDBConnection(): void
     {
-        $settings = require dirname(__DIR__).'/config/db.php';
+        $settings = require dirname(__DIR__) . '/config/db.php';
 
         $host    = $settings['host'];
         $db      = $settings['db'];
@@ -55,7 +55,7 @@ class App
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
         $opt = [
-//            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_CLASS,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
