@@ -41,7 +41,7 @@
                         <?php foreach ($films as $film) : ?>
                             <tr>
                                 <td><?= $film->id ?></td>
-                                <td><?= $film->title ?></td>
+                                <td><?= htmlspecialchars($film->title) ?></td>
                                 <td><?= $film->releaseYear ?></td>
                                 <td><?= $film->storageFormat->name ?></td>
                                 <td>
