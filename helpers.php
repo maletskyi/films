@@ -1,13 +1,13 @@
 <?php
 
-function toCamelCase($str)
+function toCamelCase($str): string
 {
     return preg_replace_callback('/_([a-z])/', function ($c) {
         return strtoupper($c[1]);
     }, $str);
 }
 
-function fromCamelCase($str)
+function fromCamelCase($str): string
 {
     $str[0] = strtolower($str[0]);
 
