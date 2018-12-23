@@ -18,7 +18,7 @@ class FilmRepository extends AbstractRepository implements FilmRepositoryInterfa
     ) {
         parent::__construct();
 
-        $this->actorRepository = $actorRepository;
+        $this->actorRepository  = $actorRepository;
         $this->formatRepository = $formatRepository;
     }
 
@@ -28,11 +28,11 @@ class FilmRepository extends AbstractRepository implements FilmRepositoryInterfa
 
         $success = $statement->execute([
             $film->title,
-            $film->releaseYear,
-            $film->storageFormatId,
+            (int) $film->releaseYear,
+            (int) $film->storageFormatId,
         ]);
 
-        if ( ! $success) {
+        if (!$success) {
             return false;
         }
 
@@ -72,7 +72,7 @@ class FilmRepository extends AbstractRepository implements FilmRepositoryInterfa
 
     public function getAll($order = 'id', $destination = 'ASC'): array
     {
-        $stmt = $this->pdo->query('SELECT * FROM ' . Film::TABLE . ' ORDER BY '.$order.' '.$destination);
+        $stmt = $this->pdo->query('SELECT * FROM ' . Film::TABLE . ' ORDER BY ' . $order . ' ' . $destination);
 
         $stmt->setFetchMode(PDO::FETCH_CLASS, Film::class);
 
@@ -104,7 +104,7 @@ class FilmRepository extends AbstractRepository implements FilmRepositoryInterfa
             return null;
         }
 
-        $statement   = $this->pdo->prepare('SELECT * FROM ' . Film::TABLE . ' WHERE ' . $field . ' LIKE ? ORDER BY ' . $field);
+        $statement = $this->pdo->prepare('SELECT * FROM ' . Film::TABLE . ' WHERE ' . $field . ' LIKE ? ORDER BY ' . $field);
 
         $statement->execute([$query . '%']);
 
