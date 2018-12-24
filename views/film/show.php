@@ -6,7 +6,7 @@
                 <h1 class="text-center my-4"><?= $film->title ?></h1>
 
                 <p>ID: <?= $film->id ?></p>
-                <p>Title: <?= $film->title ?></p>
+                <p>Title: <?= htmlspecialchars($film->title) ?></p>
                 <p>Release year: <?= $film->releaseYear ?></p>
                 <p>Format: <?= $film->storageFormat->name ?></p>
                 <p>Actors: <?= implode(', ', $film->actors) ?></p>
