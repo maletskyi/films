@@ -29,7 +29,7 @@ CREATE TABLE `actor_film` (
   KEY `actor_film_films_id_fk` (`film_id`),
   CONSTRAINT `actor_film_actors_id_fk` FOREIGN KEY (`actor_id`) REFERENCES `actors` (`id`) ON DELETE CASCADE,
   CONSTRAINT `actor_film_films_id_fk` FOREIGN KEY (`film_id`) REFERENCES `films` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,10 +50,10 @@ DROP TABLE IF EXISTS `actors`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `actors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(255) DEFAULT NULL,
-  `last_name` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=322 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,12 +75,13 @@ DROP TABLE IF EXISTS `films`;
 CREATE TABLE `films` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
-  `release_year` year(4) NOT NULL,
   `storage_format_id` int(11) NOT NULL,
+  `release_year` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `films_storage_formats_id_fk` (`storage_format_id`),
-  CONSTRAINT `films_storage_formats_id_fk` FOREIGN KEY (`storage_format_id`) REFERENCES `storage_formats` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `films_title_uindex` (`title`),
+  KEY `films_storage_format_id_fk` (`storage_format_id`),
+  CONSTRAINT `films_storage_format_id_fk` FOREIGN KEY (`storage_format_id`) REFERENCES `storage_formats` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,8 +104,8 @@ CREATE TABLE `storage_formats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `storage_formats_name_uindex` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `storage_format_name_uindex` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,4 +127,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-18 11:59:42
+-- Dump completed on 2018-12-24 23:25:03
