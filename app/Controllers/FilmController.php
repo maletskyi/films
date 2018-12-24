@@ -58,14 +58,23 @@ class FilmController extends Controller
     {
         $params = $request->getParsedBody();
 
-        $currentYear = (int) date('Y');
+        $title           = trim($params['title']);
+        $releaseYear     = trim($params['release_year']);
+        $storageFormatId = trim($params['storage_format_id']);
+        $actors          = preg_replace('/\s+/', ' ', trim($params['actors']));
 
-        $titleRegexRule         = new RegexRule('/^(.{2,255})$/u', $params['title'], 'Title must be greater than 1 and less than 256 characters');
-        $releaseYearRegexRule   = new RegexRule('/^([\d]{4})$/', $params['release_year'], 'Invalid release year format');
-        $releaseYearMinRule     = new MinValueRule(Film::MIN_RELEASE_YEAR, $params['release_year'], 'Release year must be greater than ' . Film::MIN_RELEASE_YEAR);
-        $releaseYearMaxRule     = new MaxValueRule($currentYear, $params['release_year'], 'Release year must be less or equal than ' . $currentYear);
-        $formatIdExistsByIdRule = new ExistsByIdRule(Container::getContainer()->get(StorageFormatRepositoryInterface::class), $params['storage_format_id'], 'Storage format does not exists');
-        $actorsRegexRule        = new RegexRule('/^([а-яА-ЯЁёіa-zA-Z0-9_\s,-]{0,255})$/u', $params['actors'], 'Invalid actors string');
+        $currentYear      = (int) date('Y');
+        $formatRepository = Container::getContainer()->get(StorageFormatRepositoryInterface::class);
+
+        $titleRegexRule = new RegexRule('/^(.{2,255})$/u', $title, 'Title must be greater than 1 and less than 256 characters');
+
+        $releaseYearRegexRule = new RegexRule('/^([\d]{4})$/', $releaseYear, 'Invalid release year format');
+        $releaseYearMinRule   = new MinValueRule(Film::MIN_RELEASE_YEAR, $releaseYear, 'Release year must be greater than ' . Film::MIN_RELEASE_YEAR);
+        $releaseYearMaxRule   = new MaxValueRule($currentYear, $releaseYear, 'Release year must be less or equal than ' . $currentYear);
+
+        $formatIdExistsByIdRule = new ExistsByIdRule($formatRepository, $storageFormatId, 'Storage format does not exists');
+
+        $actorsRegexRule = new RegexRule('/([а-яА-ЯЁёіa-zA-Z]{1,50}\s[а-яА-ЯЁёіa-zA-Z]{1,50})/u', $actors, 'Invalid actors string');
 
         $validator = new Validator();
 
@@ -77,21 +86,21 @@ class FilmController extends Controller
             ->addRule('storage_format_id', $formatIdExistsByIdRule)
             ->addRule('actors', $actorsRegexRule);
 
-        if ( ! $validator->validate()) {
+        if (!$validator->validate()) {
             $this->redirect('/films/create', [
                 'validation' => $validator->getValidationResult(),
             ]);
         }
 
         $film = new Film([
-            'title'           => $params['title'],
-            'releaseYear'     => $params['release_year'],
-            'storageFormatId' => $params['storage_format_id'],
+            'title'           => $title,
+            'releaseYear'     => $releaseYear,
+            'storageFormatId' => $storageFormatId,
         ]);
 
         $film = $this->filmService->createFilm($film);
 
-        if ( ! $film) {
+        if (!$film) {
             $this->redirect('/', [
                 'messages' => [
                     'error' => 'Sorry, can not create a new film',
@@ -99,7 +108,7 @@ class FilmController extends Controller
             ]);
         }
 
-        $actors = $this->actorService->getOrCreateActorsFromString($params['actors']);
+        $actors = $this->actorService->getOrCreateActorsFromString($actors);
 
         foreach ($actors as $actor) {
             $this->filmService->addActor($film, $actor);
@@ -123,7 +132,7 @@ class FilmController extends Controller
 
         $films = $this->filmService->importFilmsFromFile($files['films-file']['tmp_name']);
 
-        if ( ! $films) {
+        if (!$films) {
             $this->redirect('/', [
                 'messages' => [
                     'error' => 'Can not read the file',
@@ -136,7 +145,7 @@ class FilmController extends Controller
         if ($filmsCount) {
             $this->redirect('/', [
                 'messages' => [
-                    'success' => count($films).' films successfully imported',
+                    'success' => count($films) . ' films successfully imported',
                 ],
             ]);
         } else {
@@ -155,13 +164,13 @@ class FilmController extends Controller
         if ($this->filmService->deleteFilmById($id)) {
             $this->redirect('/', [
                 'messages' => [
-                    'success' => 'Film with id '.$id.' successfully deleted',
+                    'success' => 'Film with id ' . $id . ' successfully deleted',
                 ],
             ]);
         } else {
             $this->redirect('/', [
                 'messages' => [
-                    'error' => 'Can not delete film with id '.$id,
+                    'error' => 'Can not delete film with id ' . $id,
                 ],
             ]);
         }
@@ -171,8 +180,8 @@ class FilmController extends Controller
     {
         $params = $request->getParsedBody();
 
-        $searchQuery = toCamelCase($params['search-query']);
-        $searchField = toCamelCase($params['search-field']);
+        $searchQuery = trim(toCamelCase($params['search-query']));
+        $searchField = trim(toCamelCase($params['search-field']));
 
         $films = [];
 

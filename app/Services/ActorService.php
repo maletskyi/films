@@ -16,7 +16,8 @@ class ActorService implements ActorServiceInterface
 
     public function getOrCreateActorsFromString(string $actors): array
     {
-        preg_match_all('/\w+\s\w+/', $actors, $matches);
+        $actors = preg_replace('/\s+/', ' ', trim($actors));
+        preg_match_all('/([а-яА-ЯЁёіa-zA-Z]{1,50}\s[а-яА-ЯЁёіa-zA-Z]{1,50})/u', $actors, $matches);
 
         $actorsResult = [];
 
