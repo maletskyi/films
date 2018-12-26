@@ -78,7 +78,6 @@ CREATE TABLE `films` (
   `storage_format_id` int(11) NOT NULL,
   `release_year` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `films_title_uindex` (`title`),
   KEY `films_storage_format_id_fk` (`storage_format_id`),
   CONSTRAINT `films_storage_format_id_fk` FOREIGN KEY (`storage_format_id`) REFERENCES `storage_formats` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
