@@ -8,8 +8,8 @@
                 <p>ID: <?= $film->id ?></p>
                 <p>Title: <?= htmlspecialchars($film->title) ?></p>
                 <p>Release year: <?= $film->releaseYear ?></p>
-                <p>Format: <?= $film->storageFormat->name ?></p>
-                <p>Actors: <?= implode(', ', $film->actors) ?></p>
+                <p>Format: <?= htmlspecialchars($film->storageFormat->name) ?></p>
+                <p>Actors: <?= htmlspecialchars(implode(', ', $film->actors)) ?></p>
 
             </div>
         </div>

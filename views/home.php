@@ -43,7 +43,7 @@
                                 <td><?= $film->id ?></td>
                                 <td><?= htmlspecialchars($film->title) ?></td>
                                 <td><?= $film->releaseYear ?></td>
-                                <td><?= $film->storageFormat->name ?></td>
+                                <td><?= htmlspecialchars($film->storageFormat->name) ?></td>
                                 <td>
                                     <form action="/films/<?= $film->id ?>/delete" method="post">
                                         <a href="/films/<?= $film->id ?>" class="btn btn-small btn-info">View</a>
